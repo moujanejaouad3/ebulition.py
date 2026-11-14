@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EbulitionPy - INFINI ♾️</title>
+<title>EbulitionPy - 115 MILLION ♾️</title>
 <style>
 body{font-family:Arial;background:#0f172a;color:white;text-align:center;padding:20px}
-input{padding:15px;width:85%;max-width:480px;border-radius:10px;border:none;font-size:18px}
+input{padding:15px;width:85%;max-width:500px;border-radius:10px;border:none;font-size:18px}
 button{padding:15px 25px;background:#f59e0b;color:white;border:none;border-radius:10px;font-size:18px;cursor:pointer;margin-top:10px;font-weight:bold}
-.card{background:white;color:black;padding:25px;border-radius:20px;margin:20px auto;max-width:520px;text-align:center}
+.card{background:white;color:black;padding:25px;border-radius:20px;margin:20px auto;max-width:540px;text-align:center}
 .temp{font-size:32px;color:#dc2626;font-weight:bold;margin-top:10px}
 .small{color:#666;font-size:13px}
 .badge{background:#22c55e;color:white;padding:5px 12px;border-radius:20px;font-size:12px}
@@ -18,138 +18,148 @@ button{padding:15px 25px;background:#f59e0b;color:white;border:none;border-radiu
 </head>
 <body>
 <h1>🌡️ EbulitionPy ♾️</h1>
-<p><span class="badge">INFINI - 115 000 000+ Molécules - Français + Anglais</span></p>
-<p><b>N'importe quelle molécule !</b></p>
-<input id="nom" placeholder="Ex: Carbone, Acide sulfurique, Theobromine..." onkeydown="if(event.key==='Enter') chercher()">
+<p><span class="badge">115 000 000+ Molécules - VRAI INFINI</span></p>
+<p><b>Écris N'IMPORTE QUELLE molécule ! En Français ou en Anglais !</b></p>
+<p style="font-size:12px;color:#fbbf24">⚠️ Pour l'INFINI, il faut Internet - Utilise la 4G, pas le Wifi de l'école qui bloque PubChem</p>
+<input id="nom" placeholder="Ex: N'importe quelle molécule..." onkeydown="if(event.key==='Enter') chercher()">
 <br><button onclick="chercher()">Chercher 🔍</button>
 <div id="resultat"></div>
 <div class="ex">
-Clique pour tester l'INFINI :<br>
-<span onclick="tester('Carbone')">Carbone</span>
-<span onclick="tester('Acide sulfurique')">Acide sulfurique 🇫🇷</span>
-<span onclick="tester('Sulfuric Acid')">Sulfuric Acid 🇬🇧</span>
-<span onclick="tester('Theobromine')">Theobromine ♾️</span>
-<span onclick="tester('Morphine')">Morphine ♾️</span>
-<span onclick="tester('Penicilline')">Pénicilline ♾️</span>
-<span onclick="tester('Cholesterol')">Cholestérol ♾️</span>
+Teste l'INFINI - Des molécules rares :<br>
+<span onclick="tester('Acide phosphorique')">Acide phosphorique</span>
+<span onclick="tester('Theobromine')">Theobromine</span>
+<span onclick="tester('Caffeine')">Caffeine</span>
+<span onclick="tester('Amoxicilline')">Amoxicilline</span>
+<span onclick="tester('Paracetamol')">Paracétamol</span>
+<span onclick="tester('Ibuprofen')">Ibuprofen</span>
+<span onclick="tester('Cholesterol')">Cholestérol</span>
+<span onclick="tester('Testosterone')">Testostérone</span>
 </div>
 <script>
 function net(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,""); }
+
+// BASE RAPIDE - Pour les 20 plus connus, instantané même sans internet
 const base = {};
-function add(temp, ...noms){ noms.forEach(n=> base[net(n)] = temp); }
-// BASE RAPIDE OFFLINE - 100 plus connus
+function add(t,...n){ n.forEach(x=> base[net(x)] = t); }
 add("100 °C","eau","water","h2o");
 add("78.4 °C","ethanol","éthanol","alcool","alcohol");
 add("337 °C","acide sulfurique","sulfuric acid","h2so4");
 add("83 °C","acide nitrique","nitric acid","hno3");
+add("158 °C (se décompose)","acide phosphorique","phosphoric acid","h3po4");
 add("-85 °C","acide chlorhydrique","hydrochloric acid","hcl");
-add("118.1 °C","acide acétique","acetic acid","vinaigre","ch3cooh");
-add("3642 °C (Sublimation - devient gaz sans bouillir)","carbone","carbon","c","charbon","graphite","diamant");
-add("-78.5 °C (Sublimation)","dioxyde de carbone","carbon dioxide","co2");
+add("118.1 °C","acide acétique","acetic acid","vinaigre");
+add("3642 °C (Sublimation)","carbone","carbon","c","charbon");
 add("178 °C (se décompose)","cafeine","caféine","caffeine");
-add("140 °C (se décompose)","aspirine","aspirin");
-add("169 °C (se décompose)","paracetamol","paracétamol","acetaminophen","doliprane");
+add("169 °C (se décompose)","paracetamol","paracétamol","acetaminophen");
 add("150 °C (se décompose)","glucose");
-add("186 °C (se décompose)","sucre","sucrose","saccharose");
-add("1465 °C","sel","sodium chloride","nacl");
-add("56 °C","acetone","acétone");
-add("80.1 °C","benzene","benzène");
-add("-33.3 °C","ammoniaque","ammonia","nh3");
-add("-161.5 °C","methane","méthane","ch4");
 
-// DICTIONNAIRE FRANÇAIS -> ANGLAIS POUR L'INFINI
+// DICTIONNAIRE FRANÇAIS -> ANGLAIS - Pour que PubChem comprenne le Français
 const fr2en = {
-"carbone":"carbon","acidesulfurique":"sulfuric acid","acidenitrique":"nitric acid","acidechlorhydrique":"hydrochloric acid",
-"acideacetique":"acetic acid","acideformique":"formic acid","acidecitrique":"citric acid","acidelactique":"lactic acid",
-"acidebenzoique":"benzoic acid","acidephosphorique":"phosphoric acid","acideascorbique":"ascorbic acid",
-"acidesalicylique":"salicylic acid","acidefolique":"folic acid","eau":"water","alcool":"ethanol","vinaigre":"acetic acid",
-"sel":"sodium chloride","sucre":"sucrose","cafeine":"caffeine","aspirine":"aspirin","paracetamol":"acetaminophen",
-"ammoniaque":"ammonia","benzene":"benzene","methane":"methane","oxygene":"oxygen","azote":"nitrogen",
-"hydrogene":"hydrogen","dioxydedecarbone":"carbon dioxide","chlore":"chlorine","soude":"sodium hydroxide",
-"glycerol":"glycerol","vanilline":"vanillin","theobromine":"theobromine","nicotine":"nicotine","menthol":"menthol",
-"phenol":"phenol","uree":"urea","formol":"formaldehyde","chloroforme":"chloroform","mercure":"mercury",
-"fer":"iron","cuivre":"copper","or":"gold","argent":"silver","zinc":"zinc","plomb":"lead",
+"acidephosphorique":"phosphoric acid","acidesulfurique":"sulfuric acid","acidenitrique":"nitric acid",
+"acidechlorhydrique":"hydrochloric acid","acideacetique":"acetic acid","acideformique":"formic acid",
+"acidecitrique":"citric acid","acidelactique":"lactic acid","acidebenzoique":"benzoic acid",
+"acideascorbique":"ascorbic acid","acidesalicylique":"salicylic acid","acidefolique":"folic acid",
+"eau":"water","alcool":"ethanol","vinaigre":"acetic acid","sel":"sodium chloride","sucre":"sucrose",
+"cafeine":"caffeine","aspirine":"aspirin","paracetamol":"acetaminophen","ammoniaque":"ammonia",
+"benzene":"benzene","methane":"methane","oxygene":"oxygen","azote":"nitrogen","hydrogene":"hydrogen",
+"dioxydedecarbone":"carbon dioxide","chlore":"chlorine","soude":"sodium hydroxide",
+"vanilline":"vanillin","theobromine":"theobromine","nicotine":"nicotine","menthol":"menthol",
+"phenol":"phenol","uree":"urea","formol":"formaldehyde","chloroforme":"chloroform",
+"mercure":"mercury","fer":"iron","cuivre":"copper","or":"gold","argent":"silver","zinc":"zinc","plomb":"lead",
 "ibuprofene":"ibuprofen","vitaminec":"ascorbic acid","penicilline":"penicillin","morphine":"morphine",
-"codeine":"codeine","adrenaline":"epinephrine","cholesterol":"cholesterol","lactose":"lactose",
-"fructose":"fructose","amidon":"starch","cellulose":"cellulose","acetone":"acetone","toluene":"toluene",
-"methanol":"methanol","theobromine":"theobromine","cholesterol":"cholesterol"
+"amoxicilline":"amoxicillin","cholesterol":"cholesterol","lactose":"lactose","fructose":"fructose",
+"amidon":"starch","cellulose":"cellulose","acetone":"acetone","toluene":"toluene","methanol":"methanol",
+"testosterone":"testosterone","adrenaline":"epinephrine","codeine":"codeine","carbone":"carbon",
+"charbon":"carbon","dioxydedecarbone":"carbon dioxide"
 };
 
-function tester(nom){ document.getElementById('nom').value = nom; chercher(); }
+function tester(n){ document.getElementById('nom').value = n; chercher(); }
 
-// Cherche Boiling Point dans TOUT le fichier PubChem
-function trouverTemp(obj){
-  if(!obj) return null;
-  if(typeof obj === 'string'){
-    let m = obj.match(/-?\d+(\.\d+)?\s?°C/);
-    return m ? m[0] : null;
+// Cherche le Boiling Point PARTOUT dans PubChem
+function trouverTemp(o){
+  if(!o) return null;
+  if(typeof o === 'string'){
+    // Cherche "337 °C" ou "337°C" ou "610 K" etc.
+    let m = o.match(/-?\d+(\.\d+)?\s?°C/);
+    if(m) return m[0];
+    return null;
   }
-  if(Array.isArray(obj)){ for(let v of obj){ let r = trouverTemp(v); if(r) return r; } return null; }
-  if(typeof obj === 'object'){
-    if(obj.TOCHeading && obj.TOCHeading.toLowerCase().includes("boiling")){
-      try{ return obj.Information[0].Value.StringWithMarkup[0].String; }catch(e){}
-      let r = trouverTemp(obj.Information); if(r) return r;
+  if(Array.isArray(o)){ for(let v of o){ let r = trouverTemp(v); if(r) return r; } return null; }
+  if(typeof o === 'object'){
+    if(o.TOCHeading && o.TOCHeading.toLowerCase().includes("boiling")){
+      try{ let s = o.Information[0].Value.StringWithMarkup[0].String; if(s) return s; }catch(e){}
+      let r = trouverTemp(o.Information); if(r) return r;
     }
-    for(let k in obj){ let r = trouverTemp(obj[k]); if(r && k!=="TOCHeading") return r; }
+    // Ne cherche pas dans les titres
+    for(let k in o){
+      if(k==="TOCHeading") continue;
+      let r = trouverTemp(o[k]); if(r) return r;
+    }
   }
   return null;
 }
 
-async function essayerPubChem(nom){
-  // Essaie direct, puis avec proxy si PubChem bloqué à l'école
-  let urls = [
-    `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(nom)}/property/CID/JSON`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(nom)}/property/CID/JSON`)}`
+// 4 FAÇONS D'ATTEINDRE PUBCHEM - Si 1 bloque, l'autre marche !
+async function fetchAvecProxy(url){
+  let essais = [
+    url,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
   ];
-  let cid = null;
-  for(let u of urls){
+  for(let u of essais){
     try{
-      let r = await fetch(u); if(!r.ok) continue;
-      let d = await r.json(); cid = d.PropertyTable.Properties[0].CID; break;
-    }catch(e){ continue; }
-  }
-  if(!cid) return null;
-  let urls2 = [
-    `https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/${cid}/JSON?heading=Boiling+Point`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/${cid}/JSON?heading=Boiling+Point`)}`
-  ];
-  for(let u of urls2){
-    try{
-      let r = await fetch(u); if(!r.ok) continue;
-      let d = await r.json(); let t = trouverTemp(d.Record);
-      if(t) return {temp:t, cid:cid};
-      return {temp:"Pas de point d'ébullition - Elle se décompose / se sublime avant de bouillir", cid:cid};
+      let r = await fetch(u);
+      if(!r.ok) continue;
+      let t = await r.text();
+      // Vérifie que c'est du JSON valide
+      if(t.startsWith("{") || t.startsWith("[")) return JSON.parse(t);
     }catch(e){ continue; }
   }
   return null;
+}
+
+async function chercherPubChem(nom){
+  // Étape 1 : Trouver le CID (le numéro de la molécule)
+  let d1 = await fetchAvecProxy(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(nom)}/property/CID,CanonicalSMILES/JSON`);
+  if(!d1 || !d1.PropertyTable) return null;
+  let cid = d1.PropertyTable.Properties[0].CID;
+  // Étape 2 : Prendre la page Boiling Point
+  let d2 = await fetchAvecProxy(`https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/${cid}/JSON?heading=Boiling+Point`);
+  if(!d2) return null;
+  let temp = trouverTemp(d2.Record);
+  if(temp) return {temp:temp, cid:cid};
+  // Si pas de Boiling Point, c'est qu'elle se décompose
+  return {temp:"Pas de point d'ébullition - Elle se décompose / se sublime avant de bouillir (comme le Carbone)", cid:cid};
 }
 
 async function chercher(){
   let nomOrig = document.getElementById('nom').value.trim();
   if(!nomOrig) return alert('Écris un nom !');
-  document.getElementById('resultat').innerHTML = '⏳ Je cherche dans 115 millions de molécules...';
+  document.getElementById('resultat').innerHTML = '⏳ Je cherche dans 115 millions de molécules...<br><small>Ça peut prendre 3 secondes...</small>';
   let cle = net(nomOrig);
+  // 1. Base rapide
   if(base[cle]){
-    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${base[cle]}</div><p class="small">Source : EbulitionPy ♾️</p></div>`;
+    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${base[cle]}</div><p class="small">Source : EbulitionPy - Rapide ✅</p></div>`;
     return;
   }
+  // 2. INFINI - Traduction + PubChem avec 4 proxies
   let nomAng = fr2en[cle] || nomOrig;
-  let essais = [...new Set([nomOrig, nomAng])];
+  let essais = [...new Set([nomAng, nomOrig])];
   for(let essai of essais){
     try{
-      let r = await essayerPubChem(essai);
+      let r = await chercherPubChem(essai);
       if(r){
-        document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${r.temp}</div><p class="small">Source : PubChem ♾️ - N° ${r.cid} | Cherché : ${essai}</p></div>`;
+        document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${r.temp}</div><p class="small">Source : PubChem ♾️ - 115M molécules - N° ${r.cid}<br>Cherché : ${essai}</p></div>`;
         return;
       }
     }catch(e){ continue; }
   }
-  document.getElementById('resultat').innerHTML = `<p>❌ Molécule introuvable.<br>Essaie : Carbone, Acide sulfurique, Theobromine, Morphine<br>Vérifie l'orthographe, en Français ou en Anglais<br><i>Astuce : Connecte-toi à Internet (pas le Wifi de l'école s'il bloque PubChem)</i></p>`;
+  document.getElementById('resultat').innerHTML = `<p>❌ Molécule introuvable.<br><b>1.</b> Vérifie l'orthographe<br><b>2.</b> Essaie en Anglais<br><b>3.</b> Coupe le Wifi de l'école et utilise la 4G - le Wifi bloque PubChem !<br>Essaie : Acide phosphorique, Theobromine, Amoxicilline</p>`;
 }
 </script>
 </body>
 </html>
-
   
 
     
