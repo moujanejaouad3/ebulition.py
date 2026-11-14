@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EbulitionPy - Infini ♾️</title>
+<title>EbulitionPy - Ça comprend TOUT !</title>
 <style>
 body{font-family:Arial;background:#0f172a;color:white;text-align:center;padding:20px}
 input{padding:15px;width:85%;max-width:450px;border-radius:10px;border:none;font-size:18px}
@@ -11,86 +11,135 @@ button{padding:15px 25px;background:#f59e0b;color:white;border:none;border-radiu
 .card{background:white;color:black;padding:25px;border-radius:20px;margin:20px auto;max-width:500px;text-align:center}
 .temp{font-size:32px;color:#dc2626;font-weight:bold;margin-top:10px}
 .small{color:#666;font-size:13px}
-.badge{background:#22c55e;color:white;padding:5px 12px;border-radius:20px;font-size:12px}
+.ex{margin-top:20px;font-size:13px;color:#cbd5e1}
+.ex span{background:#1e293b;padding:5px 10px;border-radius:20px;margin:3px;display:inline-block;cursor:pointer}
 </style>
 </head>
 <body>
-<h1>🌡️ EbulitionPy ♾️</h1>
-<p><span class="badge">INFINI - 115 000 000+ Molécules</span></p>
-<p>Écris N'IMPORTE QUELLE molécule !</p>
-<input id="nom" placeholder="Ex: Eau, Paracétamol, Glucose, Caféine..." onkeydown="if(event.key==='Enter') chercher()">
+<h1>🌡️ EbulitionPy</h1>
+<p>Écris N'IMPORTE QUELLE molécule, en Français ou en Anglais !</p>
+<input id="nom" placeholder="Ex: Sulfuric Acid, Eau, Cafeine..." onkeydown="if(event.key==='Enter') chercher()">
 <br>
 <button onclick="chercher()">Chercher 🔍</button>
 <div id="resultat"></div>
 
+<div class="ex">
+Clique pour tester :<br>
+<span onclick="tester('Sulfuric Acid')">Sulfuric Acid</span>
+<span onclick="tester('Eau')">Eau</span>
+<span onclick="tester('Ethanol')">Ethanol</span>
+<span onclick="tester('Cafeine')">Caféine</span>
+<span onclick="tester('Glucose')">Glucose</span>
+<span onclick="tester('Acide sulfurique')">Acide sulfurique</span>
+</div>
+
 <script>
-// TRADUCTION FR -> EN pour PubChem
-const trad = {
-  "eau":"water", "alcool":"ethanol", "vinaigre":"acetic acid",
-  "sel":"sodium chloride", "sucre":"sucrose", "aspirine":"aspirin",
-  "cafeine":"caffeine", "caféine":"caffeine", "acétone":"acetone",
-  "ammoniaque":"ammonia", "benzène":"benzene", "méthane":"methane",
-  "éthanol":"ethanol", "chloroforme":"chloroform", "oxygène":"oxygen",
-  "azote":"nitrogen", "hydrogène":"hydrogen", "dioxyde de carbone":"carbon dioxide"
-};
-
-// BASE RAPIDE pour les 5 plus connues - pour que ça soit instantané
-const rapide = {
-  "eau":"100 °C", "water":"100 °C",
-  "ethanol":"78.4 °C", "éthanol":"78.4 °C", "alcool":"78.4 °C",
-  "acétone":"56 °C", "acetone":"56 °C",
-  "benzène":"80.1 °C", "benzene":"80.1 °C"
-};
-
-function trouverTemp(o){
-  if(!o) return null;
-  if(o.TOCHeading && o.TOCHeading.toLowerCase().includes("boiling")){
-    try{ return o.Information[0].Value.StringWithMarkup[0].String; }catch(e){ return null; }
-  }
-  if(o.Section){ for(let s of o.Section){ let r=trouverTemp(s); if(r) return r; } }
-  return null;
+function net(s){
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 }
+
+const base = {};
+function add(temp, ...noms){ noms.forEach(n=> base[net(n)] = temp); }
+
+add("100 °C","eau","water","h2o");
+add("78.4 °C","ethanol","éthanol","alcool","alcohol");
+add("64.7 °C","methanol","méthanol");
+add("56 °C","acetone","acétone");
+add("80.1 °C","benzene","benzène");
+add("110.6 °C","toluene","toluène");
+add("61.2 °C","chloroforme","chloroform");
+add("34.6 °C","ether","éther");
+add("337 °C","acide sulfurique","sulfuric acid","acide sulfurique","h2so4","sulfuricacid");
+add("83 °C","acide nitrique","nitric acid","hno3");
+add("-85 °C","acide chlorhydrique","hydrochloric acid","hcl");
+add("118.1 °C","acide acétique","acetic acid","vinaigre","ch3cooh");
+add("100.8 °C","acide formique","formic acid");
+add("175 °C (se décompose)","acide citrique","citric acid");
+add("122 °C","acide lactique","lactic acid");
+add("249.2 °C","acide benzoïque","benzoic acid");
+add("158 °C","acide phosphorique","phosphoric acid","h3po4");
+add("-33.3 °C","ammoniaque","ammonia","nh3");
+add("-161.5 °C","methane","méthane","ch4");
+add("-42 °C","propane");
+add("-0.5 °C","butane");
+add("-183 °C","oxygène","oxygen","o2");
+add("-195.8 °C","azote","nitrogen","n2");
+add("-252.9 °C","hydrogène","hydrogen","h2");
+add("-78.5 °C (sublimation)","dioxyde de carbone","co2","carbon dioxide");
+add("178 °C (se décompose)","cafeine","caféine","caffeine");
+add("140 °C (se décompose)","aspirine","aspirin");
+add("169 °C (se décompose)","paracetamol","paracétamol","acetaminophen","doliprane");
+add("157 °C","ibuprofene","ibuprofène","ibuprofen");
+add("190 °C (se décompose)","vitamine c","vitamin c","acide ascorbique","ascorbic acid");
+add("186 °C (se décompose)","sucre","sucrose","saccharose");
+add("1465 °C","sel","sodium chloride","chlorure de sodium","nacl");
+add("150 °C (se décompose)","glucose");
+add("103 °C (se décompose)","fructose");
+add("290 °C","glycerol","glycérol","glycerine");
+add("197.3 °C","ethylene glycol","éthylène glycol");
+add("68.7 °C","hexane");
+add("36.1 °C","pentane");
+add("125.6 °C","octane");
+add("356.7 °C","mercure","mercury","hg");
+add("2862 °C","fer","iron","fe");
+add("2562 °C","cuivre","copper","cu");
+add("2470 °C","aluminium","aluminum");
+add("2856 °C","or","gold","au");
+add("2162 °C","argent","silver","ag");
+add("907 °C","zinc","zn");
+add("1749 °C","plomb","lead","pb");
+add("247 °C","nicotine");
+add("212 °C","menthol");
+add("285 °C","vanilline","vanillin");
+add("290 °C (se décompose)","théobromine","theobromine");
+add("181.7 °C","phénol","phenol");
+add("184.1 °C","aniline");
+add("115.2 °C","pyridine");
+add("218 °C","naphtalène","naphthalene");
+add("145 °C","styrene","styrène");
+add("133 °C (se décompose)","urée","urea");
+add("-19 °C","formaldehyde","formaldéhyde","formol");
+add("97 °C","propanol");
+add("117.7 °C","butanol");
+add("82.6 °C","isopropanol");
+add("39.6 °C","dichloromethane");
+add("76.7 °C","tétrachlorure de carbone","carbon tetrachloride");
+
+function tester(nom){ document.getElementById('nom').value = nom; chercher(); }
 
 async function chercher(){
   let nomOrig = document.getElementById('nom').value.trim();
   if(!nomOrig) return alert('Écris un nom !');
-  let cle = nomOrig.toLowerCase();
-  document.getElementById('resultat').innerHTML = '⏳ Je cherche dans 115 millions de molécules...';
+  document.getElementById('resultat').innerHTML = '⏳ Je cherche...';
+  let cle = net(nomOrig);
 
-  // 1. Rapide
-  if(rapide[cle]){
-    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${rapide[cle]}</div><p class="small">Source : EbulitionPy ♾️</p></div>`;
+  // 1. DABA KAY-FHEM KOLCHI F L-BLASSA - BLA PUBCHEM !
+  if(base[cle]){
+    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${base[cle]}</div><p class="small">Source : EbulitionPy</p></div>`;
     return;
   }
 
-  // 2. INFINI - PubChem
-  let nom = trad[cle] || nomOrig;
+  // 2. Si ma-l9ach, kay-jereb PubChem
   try{
-    let res = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(nom)}/property/CID,CanonicalSMILES/JSON`);
+    let res = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(nomOrig)}/property/CID/JSON`);
     if(!res.ok) throw new Error('no');
     let data = await res.json();
     let cid = data.PropertyTable.Properties[0].CID;
-
-    let res2 = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/${cid}/JSON?heading=Experimental+Properties`);
+    let res2 = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/${cid}/JSON?heading=Boiling+Point`);
     let data2 = await res2.json();
-    let t = trouverTemp(data2.Record);
-
-    if(!t){
-      // Si pas de point d'ébullition, on essaie le point de fusion / décomposition
-      t = "Pas de point d'ébullition - Cette molécule se décompose avant de bouillir";
-    }
-
-    document.getElementById('resultat').innerHTML = `
-      <div class="card">
-        <h2>✅ ${nomOrig}</h2>
-        <p>La température d'ébullition est de :</p>
-        <div class="temp">🌡️ ${t}</div>
-        <p class="small">Source : PubChem ♾️ - Molécule N° ${cid} / 115 000 000+</p>
-      </div>`;
+    let t = null;
+    try{ t = data2.Record.Section[0].Section[0].Information[0].Value.StringWithMarkup[0].String; }catch(e){}
+    if(!t) t = "Pas de point d'ébullition - Elle se décompose avant de bouillir";
+    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${t}</div><p class="small">Source : PubChem</p></div>`;
   }catch(e){
-    document.getElementById('resultat').innerHTML = `<p>❌ Molécule introuvable.<br>Essaie en anglais : Water, Ethanol, Glucose, Caffeine<br>Ou vérifie l'orthographe</p>`;
+    document.getElementById('resultat').innerHTML = `<p>❌ Molécule introuvable.<br>Essaie : Sulfuric Acid, Eau, Ethanol, Cafeine<br>Écris sans accent, ou en anglais</p>`;
   }
 }
 </script>
 </body>
 </html>
+
+  
+
+    
+  
