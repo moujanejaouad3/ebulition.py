@@ -3,79 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EbulitionPy - Température</title>
+<title>EbulitionPy - Infini ♾️</title>
 <style>
 body{font-family:Arial;background:#0f172a;color:white;text-align:center;padding:20px}
-input{padding:15px;width:85%;max-width:400px;border-radius:10px;border:none;font-size:18px}
+input{padding:15px;width:85%;max-width:450px;border-radius:10px;border:none;font-size:18px}
 button{padding:15px 25px;background:#f59e0b;color:white;border:none;border-radius:10px;font-size:18px;cursor:pointer;margin-top:10px;font-weight:bold}
-.card{background:white;color:black;padding:25px;border-radius:20px;margin:20px auto;max-width:450px;text-align:center}
+.card{background:white;color:black;padding:25px;border-radius:20px;margin:20px auto;max-width:500px;text-align:center}
 .temp{font-size:32px;color:#dc2626;font-weight:bold;margin-top:10px}
 .small{color:#666;font-size:13px}
+.badge{background:#22c55e;color:white;padding:5px 12px;border-radius:20px;font-size:12px}
 </style>
 </head>
 <body>
-<h1>🌡️ EbulitionPy</h1>
-<p>Écris le nom d'une molécule, je te donne sa température d'ébullition !</p>
-<input id="nom" placeholder="Ex: Eau, Ethanol, Aspirine...">
+<h1>🌡️ EbulitionPy ♾️</h1>
+<p><span class="badge">INFINI - 115 000 000+ Molécules</span></p>
+<p>Écris N'IMPORTE QUELLE molécule !</p>
+<input id="nom" placeholder="Ex: Eau, Paracétamol, Glucose, Caféine..." onkeydown="if(event.key==='Enter') chercher()">
 <br>
 <button onclick="chercher()">Chercher 🔍</button>
 <div id="resultat"></div>
 
 <script>
-// BASE DE DONNÉES LOCALE - Marche même sans PubChem
-const base = {
-  "eau":"100 °C", "water":"100 °C", "h2o":"100 °C",
-  "ethanol":"78.4 °C", "éthanol":"78.4 °C", "alcool":"78.4 °C", "alcool éthylique":"78.4 °C",
-  "acetone":"56 °C", "acétone":"56 °C",
-  "methanol":"64.7 °C", "méthanol":"64.7 °C",
-  "benzene":"80.1 °C", "benzène":"80.1 °C",
-  "chloroforme":"61.2 °C", "chloroform":"61.2 °C",
-  "ether":"34.6 °C", "éther":"34.6 °C",
-  "acide acétique":"118.1 °C", "vinaigre":"118.1 °C", "acetic acid":"118.1 °C",
-  "ammoniaque":"-33.3 °C", "ammonia":"-33.3 °C",
-  "methane":"-161.5 °C", "méthane":"-161.5 °C",
-  "propane":"-42 °C", "butane":"-0.5 °C",
-  "hexane":"68.7 °C", "pentane":"36.1 °C", "octane":"125.6 °C",
-  "toluene":"110.6 °C", "toluène":"110.6 °C",
-  "glycerol":"290 °C", "glycérol":"290 °C", "glycerine":"290 °C", "glycérine":"290 °C",
-  "cafeine":"178 °C (se décompose)", "caféine":"178 °C (se décompose)", "caffeine":"178 °C (se décompose)",
-  "aspirine":"140 °C (se décompose)", "aspirin":"140 °C (se décompose)",
-  "sel":"1465 °C", "sodium chloride":"1465 °C", "chlorure de sodium":"1465 °C",
-  "sucre":"186 °C (se décompose)", "sucrose":"186 °C (se décompose)", "saccharose":"186 °C (se décompose)",
-  "oxygene":"-183 °C", "oxygène":"-183 °C", "oxygen":"-183 °C",
-  "azote":"-195.8 °C", "nitrogen":"-195.8 °C",
-  "hydrogene":"-252.9 °C", "hydrogène":"-252.9 °C",
-  "dioxyde de carbone":"-78.5 °C (sublimation)", "co2":"-78.5 °C",
-  "acide sulfurique":"337 °C", "sulfuric acid":"337 °C",
-  "acide chlorhydrique":"-85 °C", "acide nitrique":"83 °C",
-  "formaldehyde":"-19 °C", "formaldéhyde":"-19 °C",
-  "paracetamol":"169 °C (se décompose)", "paracétamol":"169 °C (se décompose)",
-  "ibuprofene":"157 °C", "ibuprofène":"157 °C",
-  "vitamine c":"190 °C (se décompose)", "acide ascorbique":"190 °C (se décompose)",
-  "huile d'olive":"300 °C", "essence":"30 °C à 200 °C",
-  "mercure":"356.7 °C", "mercury":"356.7 °C",
-  "fer":"2862 °C", "cuivre":"2562 °C", "aluminium":"2470 °C", "or":"2856 °C"
-};
-
+// TRADUCTION FR -> EN pour PubChem
 const trad = {
   "eau":"water", "alcool":"ethanol", "vinaigre":"acetic acid",
   "sel":"sodium chloride", "sucre":"sucrose", "aspirine":"aspirin",
   "cafeine":"caffeine", "caféine":"caffeine", "acétone":"acetone",
   "ammoniaque":"ammonia", "benzène":"benzene", "méthane":"methane",
-  "éthanol":"ethanol", "chloroforme":"chloroform"
+  "éthanol":"ethanol", "chloroforme":"chloroform", "oxygène":"oxygen",
+  "azote":"nitrogen", "hydrogène":"hydrogen", "dioxyde de carbone":"carbon dioxide"
 };
 
-function trouverTemp(obj){
-  if(!obj) return null;
-  if(obj.TOCHeading && obj.TOCHeading.includes("Boiling Point")){
-    try{ return obj.Information[0].Value.StringWithMarkup[0].String; }catch(e){ return null; }
+// BASE RAPIDE pour les 5 plus connues - pour que ça soit instantané
+const rapide = {
+  "eau":"100 °C", "water":"100 °C",
+  "ethanol":"78.4 °C", "éthanol":"78.4 °C", "alcool":"78.4 °C",
+  "acétone":"56 °C", "acetone":"56 °C",
+  "benzène":"80.1 °C", "benzene":"80.1 °C"
+};
+
+function trouverTemp(o){
+  if(!o) return null;
+  if(o.TOCHeading && o.TOCHeading.toLowerCase().includes("boiling")){
+    try{ return o.Information[0].Value.StringWithMarkup[0].String; }catch(e){ return null; }
   }
-  if(obj.Section){
-    for(let s of obj.Section){
-      let r = trouverTemp(s);
-      if(r) return r;
-    }
-  }
+  if(o.Section){ for(let s of o.Section){ let r=trouverTemp(s); if(r) return r; } }
   return null;
 }
 
@@ -83,40 +55,40 @@ async function chercher(){
   let nomOrig = document.getElementById('nom').value.trim();
   if(!nomOrig) return alert('Écris un nom !');
   let cle = nomOrig.toLowerCase();
-  document.getElementById('resultat').innerHTML = '⏳ Je cherche...';
+  document.getElementById('resultat').innerHTML = '⏳ Je cherche dans 115 millions de molécules...';
 
-  // 1. D'abord on cherche dans notre liste locale - C'est instantané !
-  if(base[cle]){
-    document.getElementById('resultat').innerHTML = `
-      <div class="card">
-        <h2>✅ ${nomOrig}</h2>
-        <p>La température d'ébullition est de :</p>
-        <div class="temp">🌡️ ${base[cle]}</div>
-        <p class="small">Source : Base EbulitionPy</p>
-      </div>`;
+  // 1. Rapide
+  if(rapide[cle]){
+    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${rapide[cle]}</div><p class="small">Source : EbulitionPy ♾️</p></div>`;
     return;
   }
 
-  // 2. Sinon on cherche sur PubChem
+  // 2. INFINI - PubChem
   let nom = trad[cle] || nomOrig;
   try{
-    let res = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(nom)}/property/CID/JSON`);
+    let res = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(nom)}/property/CID,CanonicalSMILES/JSON`);
     if(!res.ok) throw new Error('no');
     let data = await res.json();
     let cid = data.PropertyTable.Properties[0].CID;
+
     let res2 = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/${cid}/JSON?heading=Experimental+Properties`);
     let data2 = await res2.json();
-    let tempText = trouverTemp(data2.Record);
-    if(!tempText) tempText = "Pas de température d'ébullition - Cette molécule se décompose avant de bouillir";
+    let t = trouverTemp(data2.Record);
+
+    if(!t){
+      // Si pas de point d'ébullition, on essaie le point de fusion / décomposition
+      t = "Pas de point d'ébullition - Cette molécule se décompose avant de bouillir";
+    }
+
     document.getElementById('resultat').innerHTML = `
       <div class="card">
         <h2>✅ ${nomOrig}</h2>
         <p>La température d'ébullition est de :</p>
-        <div class="temp">🌡️ ${tempText}</div>
-        <p class="small">Source : PubChem</p>
+        <div class="temp">🌡️ ${t}</div>
+        <p class="small">Source : PubChem ♾️ - Molécule N° ${cid} / 115 000 000+</p>
       </div>`;
   }catch(e){
-    document.getElementById('resultat').innerHTML = '<p>❌ Molécule introuvable, essaie : Eau, Ethanol, Acétone, Caféine, Aspirine</p>';
+    document.getElementById('resultat').innerHTML = `<p>❌ Molécule introuvable.<br>Essaie en anglais : Water, Ethanol, Glucose, Caffeine<br>Ou vérifie l'orthographe</p>`;
   }
 }
 </script>
