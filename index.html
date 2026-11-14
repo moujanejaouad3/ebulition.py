@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Températures d'Ébullition</title>
+<style>
+body{font-family:Arial;background:#eef6ff;padding:15px;margin:0}
+.box{max-width:600px;margin:auto;background:white;padding:20px;border-radius:15px}
+h1{text-align:center;color:#0b6cff;font-size:22px}
+input{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;box-sizing:border-box;margin:10px 0}
+table{width:100%;border-collapse:collapse}
+th{background:#0b6cff;color:white;padding:10px}
+td{padding:9px;border-bottom:1px solid #eee}
+.badge{background:#eafff3;color:#0a7a42;padding:4px 8px;border-radius:20px;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>🌡️ CALCUL DES TEMPÉRATURES D'ÉBULLITION</h1>
+<p style="text-align:center">34 molécules - Code Python thermo</p>
+<input id="search" placeholder="🔍 Rechercher... ex: ethanol" oninput="filtrer()">
+<table><thead><tr><th>Molécule</th><th>Tb (°C)</th><th>Tb (K)</th></tr></thead><tbody id="tbody"></tbody></table>
+<p id="count" style="font-weight:bold;text-align:center"></p>
+</div>
+<script>
+const data=[["Eau (H2O)",100.00],["Méthanol",64.70],["Éthanol",78.37],["Acétone",56.05],["Hexane",68.70],["Xylène",144.40],["l-Menthol",212.00],["Toluene",110.60],["Acide Sulfurique",337.00],["Benzene",80.10],["Acide Phosphorique",158.00],["Ammoniaque",-33.34],["Acide Acetique",118.10],["Aspirine",140.00],["Chlorure de Sodium",1465.00],["Nitrate de Sodium",380.00],["Potassium",759.00],["HCl",-85.00],["Heptane",98.40],["Pentane",36.10],["Nonane",150.80],["Decane",174.10],["Isoprapanol",82.50],["Propanol",97.00],["Chloroforme",61.20],["Glycerol",290.00],["Butanol",117.70],["Cyclopentane",49.30],["Cyclohexane",80.70],["Cycloheptane",118.40],["Cyclononane",167.00],["Diethyl ether",34.60],["Dichloromethane",39.60]];
+function afficher(l){document.getElementById('tbody').innerHTML=l.map(m=>`<tr><td>${m[0]}</td><td><span class="badge">${m[1].toFixed(2)} °C</span></td><td>${(m[1]+273.15).toFixed(2)} K</td></tr>`).join('');document.getElementById('count').innerText="Total : "+l.length+" molécules";}
+function filtrer(){let q=document.getElementById('search').value.toLowerCase();afficher(data.filter(m=>m[0].toLowerCase().includes(q)));}
+afficher(data);
+</script>
+</body>
+</html>
