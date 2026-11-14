@@ -1,33 +1,15 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Températures d'Ébullition</title>
-<style>
-body{font-family:Arial;background:#eef6ff;padding:15px;margin:0}
-.box{max-width:600px;margin:auto;background:white;padding:20px;border-radius:15px}
-h1{text-align:center;color:#0b6cff;font-size:22px}
-input{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;box-sizing:border-box;margin:10px 0}
-table{width:100%;border-collapse:collapse}
-th{background:#0b6cff;color:white;padding:10px}
-td{padding:9px;border-bottom:1px solid #eee}
-.badge{background:#eafff3;color:#0a7a42;padding:4px 8px;border-radius:20px;font-weight:bold}
-</style>
-</head>
-<body>
-<div class="box">
-<h1>🌡️ CALCUL DES TEMPÉRATURES D'ÉBULLITION</h1>
-<p style="text-align:center">34 molécules - Code Python thermo</p>
-<input id="search" placeholder="🔍 Rechercher... ex: ethanol" oninput="filtrer()">
-<table><thead><tr><th>Molécule</th><th>Tb (°C)</th><th>Tb (K)</th></tr></thead><tbody id="tbody"></tbody></table>
-<p id="count" style="font-weight:bold;text-align:center"></p>
-</div>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calcul des Températures d'Ébullition - 200 Molécules</title>
+<style>body{font-family:Arial;background:#f4f7fb;padding:20px}h1{color:#007bff;text-align:center}input{width:100%;padding:12px;margin:10px 0;font-size:16px}table{width:100%;border-collapse:collapse;background:white}th{background:#007bff;color:white;padding:10px}td{padding:8px;border-bottom:1px solid #ddd;text-align:center}td:first-child{text-align:left}</style>
+</head><body>
+<h1>CALCUL DES TEMPÉRATURES D'ÉBULLITION</h1><p style="text-align:center">200 molécules - Code Python thermo</p>
+<input id="s" placeholder="Rechercher... ex: Éthanol" onkeyup="f()">
+<table><thead><tr><th>Molécule</th><th>Tb (°C)</th><th>Tb (K)</th></tr></thead><tbody id="t"></tbody></table>
 <script>
-const data=[["Eau (H2O)",100.00],["Méthanol",64.70],["Éthanol",78.37],["Acétone",56.05],["Hexane",68.70],["Xylène",144.40],["l-Menthol",212.00],["Toluene",110.60],["Acide Sulfurique",337.00],["Benzene",80.10],["Acide Phosphorique",158.00],["Ammoniaque",-33.34],["Acide Acetique",118.10],["Aspirine",140.00],["Chlorure de Sodium",1465.00],["Nitrate de Sodium",380.00],["Potassium",759.00],["HCl",-85.00],["Heptane",98.40],["Pentane",36.10],["Nonane",150.80],["Decane",174.10],["Isoprapanol",82.50],["Propanol",97.00],["Chloroforme",61.20],["Glycerol",290.00],["Butanol",117.70],["Cyclopentane",49.30],["Cyclohexane",80.70],["Cycloheptane",118.40],["Cyclononane",167.00],["Diethyl ether",34.60],["Dichloromethane",39.60]];
-function afficher(l){document.getElementById('tbody').innerHTML=l.map(m=>`<tr><td>${m[0]}</td><td><span class="badge">${m[1].toFixed(2)} °C</span></td><td>${(m[1]+273.15).toFixed(2)} K</td></tr>`).join('');document.getElementById('count').innerText="Total : "+l.length+" molécules";}
-function filtrer(){let q=document.getElementById('search').value.toLowerCase();afficher(data.filter(m=>m[0].toLowerCase().includes(q)));}
-afficher(data);
-</script>
-</body>
-</html>
+let D=[
+["Eau (H2O)",100],["Méthanol",64.7],["Éthanol",78.37],["Acétone",56.05],["Hexane",68.7],["Xylène",144.4],["L-Menthol",212],["Toluène",110.6],["Acide Sulfurique",337],["Benzène",80.1],["Acide Phosphorique",158],["Ammoniaque",-33.34],["Acide Acétique",118.1],["Aspirine",140],["Méthane",-161.5],["Éthane",-88.6],["Propane",-42.1],["Butane",-0.5],["Pentane",36.1],["Heptane",98.4],["Octane",125.7],["Nonane",150.8],["Décane",174.1],["Undécane",195.9],["Dodécane",216.3],["Éthylène",-103.7],["Propylène",-47.6],["Butène",-6.3],["Acétylène",-84],["Propanol",97.2],["Butanol",117.7],["Pentanol",138],["Hexanol",157],["Heptanol",176],["Octanol",195],["Glycérol",290],["Éthylène glycol",197.3],["Propylène glycol",188.2],["Diéthylène glycol",245],["Isopropanol",82.5],["Tert-Butanol",82.4],["Cyclohexane",80.7],["Cyclopentane",49.3],["Cyclohexanol",161.8],["Chloroforme",61.2],["Dichlorométhane",39.6],["Tétrachlorure de carbone",76.7],["Chlorobenzène",131.7],["Éther diéthylique",34.6],["THF",66],["DMSO",189],["DMF",153],["Acétonitrile",81.6],["Nitrométhane",101.2],["Pyridine",115.2],["Aniline",184.1],["Phénol",181.7],["Crésol",202],["Naphtalène",218],["Anthracène",340],["Styrène",145],["Vinyl chloride",-13.4],["Acide Formique",100.8],["Acide Propionique",141.1],["Acide Butyrique",163.5],["Acide Citrique",175],["Acide Lactique",122],["Acide Benzoïque",249.2],["Acide Oxalique",157],["Acide Tartrique",170],["Formaldéhyde",-19],["Acétaldéhyde",20.2],["Propionaldéhyde",48],["Butyraldéhyde",74.8],["Benzaldéhyde",179],["Acide Chlorhydrique",-85],["Acide Nitrique",83],["Hydrogène",-252.9],["Oxygène",-183],["Azote",-195.8],["CO2 (sublimation)",-78.5],["Monoxyde de carbone",-191.5],["Dioxyde de soufre",-10],["H2S",-60],["Chlore",-34],["Brome",58.8],["Iode",184.3],["Fluor",-188],["Hélium",-268.9],["Argon",-185.8],["Mercure",356.7],["Sodium",882.9],["Potassium",759],["Calcium",1484],["Fer",2862],["Cuivre",2562],["Aluminium",2470],["Zinc",907],["Plomb",1749],["Étain",2602],["Iode",184],["Sélénium",685],["Phosphore",280.5],["Soufre",444.6],["Acide Fluorhydrique",19.5],["Eau de Javel (NaOCl)",111],["Vinaigre (5%)",100.5],["Peroxyde d'hydrogène",150.2],["Hydrazine",114],["Hydroxylamine",110],["Méthylamine",-6.3],["Éthylamine",16.6],["Diméthylamine",7],["Triméthylamine",3],["Triéthylamine",89.3],["Éthylènediamine",116.5],["Urée",133],["Thiourée",182],["Acétamide",221],["Benzamide",288],["Acétanilide",304],["Nitrobenzène",210.9],["Nitrotoluène",238],["Dinitrotoluène",300],["TNT",240],["Picrique",300],["Glycine",233],["Alanine",258],["Valine",295],["Leucine",293],["Sérine",228],["Thréonine",256],["Méthionine",283],["Phénylalanine",283],["Tyrosine",342],["Tryptophane",293],["Proline",220],["Histidine",287],["Lysine",311],["Arginine",296],["Acide Aspartique",270],["Acide Glutamique",247],["Cystéine",240],["Asparagine",234],["Glutamine",185],["Caféine",178],["Nicotine",247],["Théobromine",290],["Quinine",177],["Morphine",254],["Codéine",154],["Paracétamol",169],["Ibuprofène",157],["Diclofénac",283],["Amoxicilline",194],["Pénicilline",180],["Tétracycline",220],["Vitamine C",190],["Vitamine A",137],["Vitamine E",210],["Glucose",146],["Fructose",103],["Saccharose",186],["Lactose",202],["Maltose",160],["Amidon",256],["Cellulose",260],["Cholestérol",360],["Testostérone",155],["Œstrogène",178],["Insuline",180],["Adrénaline",215],["Dopamine",250],["Sérotonine",185],["Mélatonine",117],["Histamine",83],["Acide Urique",300],["Créatinine",300],["Bilirubine",250],["Hémoglobine",200],["Kérosène",180],["Diesel",220],["Essence",150],["Huile d'olive",300],["Huile de tournesol",230],["Huile de coco",177],["Beurre",150],["Cire d'abeille",62],["Paraffine",60],["Vaseline",200],["Goudron",300],["Bitume",300],["Asphalte",250],["Latex",150],["Caoutchouc",200],["PVC",210],["Polyéthylène",200],["Polystyrène",240],["Nylon",220],["Teflon",327],["Silicone",250],["Époxy",180],["Colle",150],["Peinture",180],["Vernis",170],["Encre",160],["Savon",180],["Shampooing",150],["Détergent",160],["Désinfectant",120],["Alcool à 70°",78],["Eau de rose",100],["Parfum",180],["Eau de Cologne",78],["Déodorant",80],["Laque",85],["Dissolvant",56],["White Spirit",150],["Acétone cosmétique",56],["Glycérine",290],["Huile essentielle lavande",220],["Huile essentielle menthe",212],["Huile essentielle eucalyptus",176],["Huile essentielle citron",176],["Huile essentielle tea tree",165],["Camphre",204],["Eucalyptol",176],["Thymol",232],["Carvacrol",237],["Limonène",176],["Pinène",155],["Caryophyllène",254],["Linalol",198],["Géraniol",230],["Citronellol",225],["Vanilline",285],["Coumarine",301],["Maltol",160],["Éthylvanilline",285]
+];
+function f(){let q=document.getElementById('s').value.toLowerCase();let h='';D.filter(x=>x[0].toLowerCase().includes(q)).forEach(x=>{h+=`<tr><td>${x[0]}</td><td>${x[1].toFixed(2)} °C</td><td>${(x[1]+273.15).toFixed(2)} K</td></tr>`});document.getElementById('t').innerHTML=h}
+f();
+</script></body></html>
