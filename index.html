@@ -35,30 +35,48 @@ Teste :<br>
 <script>
 function tester(n){ document.getElementById('nom').value=n; chercher(); }
 
-// --- 1. WIKIDATA : Kay-khdem dima, CORS me7loul ---
+// Ghir t-terjama dyal s-smiya, MA-FIH 7TA VALEUR !
+function net(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,""); }
+const fr2en = {
+  "eau":"water","carbone":"carbon","soufre":"sulfur","phosphore":"phosphorus","fer":"iron","cuivre":"copper","aluminium":"aluminum","zinc":"zinc","argent":"silver","or":"gold","nickel":"nickel","plomb":"lead","etain":"tin","calcium":"calcium","magnesium":"magnesium","sodium":"sodium","potassium":"potassium","chlore":"chlorine","brome":"bromine","iode":"iodine","hydrogene":"hydrogen","oxygene":"oxygen","azote":"nitrogen","helium":"helium","argon":"argon",
+  "acidephosphorique":"phosphoric acid","acidesulfurique":"sulfuric acid","acidenitrique":"nitric acid","acidechlorhydrique":"hydrochloric acid","acideacetique":"acetic acid","acidecitrique":"citric acid","acideformique":"formic acid","acidelactique":"lactic acid","acidebenzoique":"benzoic acid","acidesalicylique":"salicylic acid","acidefolique":"folic acid","acideascorbique":"ascorbic acid",
+  "amoxicilline":"amoxicillin","cafeine":"caffeine","penicilline":"penicillin","morphine":"morphine","cholesterol":"cholesterol","paracetamol":"acetaminophen","ibuprofene":"ibuprofen","aspirine":"aspirin","nicotine":"nicotine","quinine":"quinine","chloroquine":"chloroquine","theobromine":"theobromine",
+  "benzene":"benzene","toluene":"toluene","chloroforme":"chloroform","acetone":"acetone","ethanol":"ethanol","methanol":"methanol","phenol":"phenol","glycerol":"glycerol","glucose":"glucose","sucre":"sucrose","lactose":"lactose","fructose":"fructose","vanilline":"vanillin","camphre":"camphor","menthol":"menthol","limonene":"limonene","eucalyptol":"eucalyptol","thymol":"thymol","eugenol":"eugenol","citral":"citral","geraniol":"geraniol","linalol":"linalool",
+  "soudecaustique":"sodium hydroxide","potasse":"potassium hydroxide","bicarbonatedesoude":"sodium bicarbonate","carbonatedesodium":"sodium carbonate","carbonatedecalcium":"calcium carbonate","peroxydehydrogene":"hydrogen peroxide","eauoxygenee":"hydrogen peroxide","sel":"sodium chloride","chloruredesodium":"sodium chloride","ammoniaque":"ammonia","methane":"methane","propane":"propane","butane":"butane","pentane":"pentane","hexane":"hexane","heptane":"heptane","octane":"octane","ethane":"ethane","ethylene":"ethylene","acetylene":"acetylene","ether":"diethyl ether","vinaigre":"vinegar"
+};
+function traduire(nom){ let c = net(nom); return fr2en[c] || nom; }
+
 async function chercherWikidata(nom){
   try{
-    let r = await fetch(`https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(nom)}&language=en&format=json&origin=*`);
-    let j = await r.json();
-    if(!j.search || !j.search.length) return null;
-    let id = j.search[0].id;
-    let r2 = await fetch(`https://www.wikidata.org/wiki/Special:EntityData/${id}.json`);
-    let j2 = await r2.json();
-    let ent = j2.entities[id];
-    // P2102 = Boiling point, P2101 = Melting point
-    let claims = ent.claims && ent.claims.P2102;
-    if(!claims) return null;
-    let amount = parseFloat(claims[0].mainsnak.datavalue.value.amount);
-    let unit = claims[0].mainsnak.datavalue.value.unit;
-    // Wikidata kay-3ti b Kelvin, n-7ewlo l Celsius
-    let celsius;
-    if(unit.includes("Kelvin") || Math.abs(amount) > 200) celsius = amount - 273.15;
-    else celsius = amount;
-    return { temp: celsius.toFixed(1) + " °C", source: "Wikidata LIVE - " + id };
+    // Jereb b l-français w b l-anglais, w jereb 3 dyal n-nataij l-ewwlin
+    for(let lang of ["fr","en"]){
+      let r = await fetch(`https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(nom)}&language=${lang}&format=json&origin=*`);
+      let j = await r.json();
+      if(!j.search) continue;
+      for(let k=0;k<Math.min(3,j.search.length);k++){
+        let id = j.search[k].id;
+        try{
+          let r2 = await fetch(`https://www.wikidata.org/wiki/Special:EntityData/${id}.json`);
+          let j2 = await r2.json();
+          let ent = j2.entities[id];
+          let claims = ent.claims && ent.claims.P2102;
+          if(!claims) continue;
+          let v = claims[0].mainsnak.datavalue.value;
+          let amount = parseFloat(v.amount);
+          let unit = v.unit || "";
+          let celsius;
+          if(unit.includes("Q11579") || unit.toLowerCase().includes("kelvin")) celsius = amount - 273.15;
+          else if(unit.includes("Q42289") || unit.toLowerCase().includes("fahrenheit")) celsius = (amount - 32) * 5/9;
+          else celsius = amount;
+          if(celsius < -273 || celsius > 5000) continue;
+          return { temp: celsius.toFixed(1) + " °C", source: "Wikidata LIVE - " + id };
+        }catch(e){ continue; }
+      }
+    }
+    return null;
   }catch(e){ return null; }
 }
 
-// --- 2. PUBCHEM via 3 PROXY ---
 function trouverTemp(o){
   if(!o) return null;
   if(typeof o==='string'){ let m=o.match(/-?\d+(\.\d+)?\s?°C/); return m?m[0]:null; }
@@ -70,13 +88,7 @@ function trouverTemp(o){
   return null;
 }
 async function fetchJSON(url){
-  let proxies = [
-    url,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-  ];
+  let proxies = [url, `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, `https://corsproxy.io/?url=${encodeURIComponent(url)}`, `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`];
   for(let p of proxies){
     try{
       let ctrl = new AbortController();
@@ -85,7 +97,6 @@ async function fetchJSON(url){
       clearTimeout(to);
       if(!r.ok) continue;
       let t = await r.text();
-      // allorigins/get kay-rje3 {contents:"..."}
       if(t.includes('"contents"')){ try{ let jj=JSON.parse(t); t=jj.contents; }catch(e){} }
       if(t.trim().startsWith("{")) return JSON.parse(t);
     }catch(e){ continue; }
@@ -107,22 +118,24 @@ async function chercher(){
   let nomOrig = document.getElementById('nom').value.trim();
   if(!nomOrig) return alert('Écris un nom !');
   document.getElementById('resultat').innerHTML = '⏳ Je cherche la valeur LIVE...';
-
-  // Jereb Wikidata l-ewwel - hiya li sri3a w kat-khdem dima
-  let r1 = await chercherWikidata(nomOrig);
-  if(r1){
-    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${r1.temp}</div><p class="small">Source : ${r1.source}<br>La valeur vient du RESULTAT, pas du code !</p></div>`;
-    return;
+  let nomAng = traduire(nomOrig);
+  let essais = [...new Set([nomOrig, nomAng])];
+  for(let e of essais){
+    let r1 = await chercherWikidata(e);
+    if(r1){
+      document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${r1.temp}</div><p class="small">Source : ${r1.source}<br>La valeur vient du RESULTAT, pas du code !</p></div>`;
+      return;
+    }
   }
-  // Ila ma-l9ach, jereb PubChem
-  let r2 = await chercherPubChem(nomOrig);
-  if(r2){
-    document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${r2.temp}</div><p class="small">Source : ${r2.source}<br>La valeur vient du RESULTAT, pas du code !</p></div>`;
-    return;
+  for(let e of essais){
+    let r2 = await chercherPubChem(e);
+    if(r2){
+      document.getElementById('resultat').innerHTML = `<div class="card"><h2>✅ ${nomOrig}</h2><p>La température d'ébullition est de :</p><div class="temp">🌡️ ${r2.temp}</div><p class="small">Source : ${r2.source}<br>La valeur vient du RESULTAT, pas du code !</p></div>`;
+      return;
+    }
   }
   document.getElementById('resultat').innerHTML = `<p>❌ Molécule introuvable.<br>Essaie : Propane, Eau, Benzene, Menthol</p>`;
 }
 </script>
 </body>
 </html>
-  
